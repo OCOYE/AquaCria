@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>EASTER EGG!!!!!</title>
+  <style>
+    body {
+      background: #f7f7f7;
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #game {
+      position: relative;
+      width: 600px;
+      height: 200px;
+      margin: 40px auto;
+      background: #fff;
+      border: 2px solid #333;
+      overflow: hidden;
+    }
+    #dino {
+      position: absolute;
+      left: 50px;
+      bottom: 0;
+      width: 40px;
+      height: 40px;
+      background: #333;
+      border-radius: 8px;
+    }
+    .obstacle {
+      position: absolute;
+      bottom: 0;
+      width: 20px;
+      height: 40px;
+      background: #666;
+      border-radius: 4px;
+    }
+    #score {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 10px;
+      color: #333;
+    }
+    #gameover {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 32px;
+      color: #c00;
+      background: rgba(255,255,255,0.8);
+    }
+  </style>
+</head>
+<body>
+    <a href="../../index.html"><p>Voltar</p></a>
+  <div id="game">
+    <div id="dino"></div>
+    <div id="gameover">Game Over! <br> <button onclick="restartGame()">Reiniciar</button></div>
+  </div>
+  <div id="score">Score: 0</div>
+  <script>
+    const dino = document.getElementById('dino');
+    const game = document.getElementById('game');
+    const scoreEl = document.getElementById('score');
+    const gameoverEl = document.getElementById('gameover');
+    let isJumping = false;
+    let score = 0;
+    let gameRunning = true;
+    let obstacles = [];
+    let speed = 5;
+    let gravity = 2;
+    let jumpHeight = 70;
+    let dinoBottom = 0;
+    let jumpInterval = null;
+    let obstacleInterval = null;
+    let gameLoopInterval = null;
+
+    function jump() {
+      if (isJumping || !gameRunning) return;
+      isJumping = true;
+      let upInterval = setInterval(() => {
+        if (dinoBottom < jumpHeight) {
+          dinoBottom += gravity * 2;
+          dino.style.bottom = dinoBottom + 'px';
+        } else {
+          clearInterval(upInterval);
+          let downInterval = setInterval(() => {
+            if (dinoBottom > 0) {
+              dinoBottom -= gravity * 2;
+              dino.style.bottom = dinoBottom + 'px';
+            } else {
+              clearInterval(downInterval);
+              isJumping = false;
+            }
+          }, 16);
+        }
+      }, 16);
+    }
+
+    function createObstacle() {
+      if (!gameRunning) return;
+      const obstacle = document.createElement('div');
+      obstacle.classList.add('obstacle');
+      obstacle.style.left = '600px';
+      game.appendChild(obstacle);
+      obstacles.push(obstacle);
+    }
+
+    function updateObstacles() {
+      obstacles.forEach((obstacle, idx) => {
+        let left = parseInt(obstacle.style.left);
+        left -= speed;
+        obstacle.style.left = left + 'px';
+
+        // Colisão
+        if (
+          left < 90 && left > 50 &&
+          dinoBottom < 40
+        ) {
+          endGame();
+        }
+
+        // Remove obstáculos fora da tela
+        if (left < -20) {
+          obstacle.remove();
+          obstacles.splice(idx, 1);
+          score++;
+          scoreEl.textContent = 'Score: ' + score;
+          // Aumenta a velocidade gradualmente
+          if (score % 10 === 0) speed++;
+        }
+      });
+    }
+
+    function endGame() {
+      gameRunning = false;
+      clearInterval(obstacleInterval);
+      clearInterval(gameLoopInterval);
+      gameoverEl.style.display = 'block';
+    }
+
+    function restartGame() {
+      obstacles.forEach(obs => obs.remove());
+      obstacles = [];
+      score = 0;
+      speed = 5;
+      dinoBottom = 0;
+      dino.style.bottom = '0px';
+      scoreEl.textContent = 'Score: 0';
+      gameoverEl.style.display = 'none';
+      gameRunning = true;
+      startGame();
+    }
+
+    function startGame() {
+      obstacleInterval = setInterval(() => {
+        if (Math.random() < 0.7) createObstacle();
+      }, 1200);
+      gameLoopInterval = setInterval(() => {
+        updateObstacles();
+      }, 16);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === 'ArrowUp') jump();
+    });
+
+    // Mobile touch
+    game.addEventListener('touchstart', jump);
+
+    startGame();
+  </script>
+</body>
+</html>
