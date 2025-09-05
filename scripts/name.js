@@ -1,10 +1,10 @@
 let name = window.prompt("Qual é o seu nome?");
 
-// Verifica se o usuário digitou "gamer"
+// Verifica se o usuário digitou "gamer" (case-insensitive)
 if (name.toLowerCase() === "gamer") {
-    // Redireciona para a página de jogos
-    window.location.href = "./eggs/gamer.html";
+    // Redireciona para gamer.html
+    window.location.href = "/eggs/gamer.html";
 } else {
-    // Mostra o nome normalmente
-    document.writeln(`${name}!`);
+    // Opcional: mensagem caso não seja "gamer"
+    alert("Olá, " + name + "!");
 }
