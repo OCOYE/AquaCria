@@ -1,10 +1,9 @@
 let name = window.prompt("Qual é o seu nome?");
 
-// Verifica se o usuário digitou "gamer" (case-insensitive)
-if (name.toLowerCase() === "gamer") {
-    // Redireciona para gamer.html
-    window.location.href = "/eggs/gamer.html/";
+// Verifica se o nome digitado é "gamer" (case-insensitive)
+if (name && name.toLowerCase() === "gamer") {
+    // Redireciona para outra página do seu site
+    window.location.href = "https://ocoye.github.io/AquaCria/eggs/gamer.html"; // substitua pelo link real
 } else {
-    // Opcional: mensagem caso não seja "gamer"
-    alert("Olá, " + name + "!");
+    alert("Bem-vindo, " + name + "!");
 }
